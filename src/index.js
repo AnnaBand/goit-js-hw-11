@@ -52,6 +52,10 @@ searchForm.addEventListener('submit', async (event) => {
   if (query) {
     try {
       const data = await searchImages(query); // Wyszukujemy obrazy dla wpisanego zapytania
+      if (data.hits.length === 0) {
+        Notiflix.Notify.info('No images found. Please try a different search term.');
+        return; // Przerywamy dalsze wykonywanie funkcji
+      }
       renderImages(data.hits); // Renderujemy znalezione obrazy
       currentPage = 1; // Resetujemy numer aktualnej strony
       const loadMoreButton = document.querySelector('.load-more');
