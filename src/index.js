@@ -41,112 +41,113 @@ async function loadMoreImages(query) {
   }
 }
 
+function clearGallery() {
+  const gallery = document.querySelector('.gallery');
+  gallery.innerHTML = '';
+}
+
 function hideLoadMoreButton() {
   const loadMoreButton = document.querySelector('.load-more');
   loadMoreButton.style.display = 'none';
 }
 
+function showLoadMoreButton() {
+  const loadMoreButton = document.querySelector('.load-more');
+  loadMoreButton.style.display = 'block';
+}
+
 const searchForm = document.getElementById('search-form');
 searchForm.addEventListener('submit', async (event) => {
-  event.preventDefault(); // Zapobiegamy domyślnej akcji formularza (przeładowaniu strony)
+  event.preventDefault();
   const searchInput = document.querySelector('[name="searchQuery"]');
-  const query = searchInput.value.trim(); // Pobieramy wartość wpisaną przez użytkownika
+  const query = searchInput.value.trim();
 
   if (query) {
     try {
-      const data = await searchImages(query); // Wyszukujemy obrazy dla wpisanego zapytania
-      Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+      const data = await searchImages(query);
       if (data.hits.length === 0) {
         Notiflix.Notify.info('No images found. Please try a different search term.');
-        return; // Przerywamy dalsze wykonywanie funkcji
+        return;
+      } else {
+        Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
       }
-      renderImages(data.hits); // Renderujemy znalezione obrazy
-      currentPage = 1; // Resetujemy numer aktualnej strony
-      const loadMoreButton = document.querySelector('.load-more');
-      loadMoreButton.style.display = 'block'; // Wyświetlamy przycisk "Load more"
+      currentPage = 1;
+      renderImages(data.hits);
+      showLoadMoreButton();
       if (data.totalHits <= currentPage * 40) {
-        hideLoadMoreButton(); // Ukrywamy przycisk, jeśli nie ma więcej wyników do wczytania
+        hideLoadMoreButton();
       }
     } catch (error) {
-      Notiflix.Notify.failure('Error while searching for images. Please try again.'); // Wyświetlamy powiadomienie o błędzie
+      Notiflix.Notify.failure('Error while searching for images. Please try again.');
     }
   }
 });
 
-// Renderowanie obrazków
-function renderImages(images) {
-    const gallery = document.querySelector('.gallery');
-    
-images.forEach(image => {
-        const imgContainer = document.createElement('div'); // Tworzymy kontener dla obrazka i informacji
-        imgContainer.classList.add('photo-card'); // Dodajemy klasę dla kontenera
-        
-        const imgLink = document.createElement('a');
-        imgLink.href = image.largeImageURL;
-        imgLink.setAttribute('data-lightbox', 'gallery');
+const searchInput = document.querySelector('[name="searchQuery"]');
+searchInput.addEventListener('input', () => {
+  currentPage = 1;
+  clearGallery();
+});
 
-        const img = document.createElement('img');
-        img.src = image.webformatURL;
-        img.alt = image.tags;
-    img.loading = 'lazy';
-    img.style.maxWidth = '100%';
-
-        imgLink.appendChild(img);
-        imgContainer.appendChild(imgLink); // Dodajemy obrazek do kontenera
-
-        // Tworzymy kontener dla informacji o obrazku
-        const infoContainer = document.createElement('div');
-        infoContainer.classList.add('info');
-
-        // Tworzymy elementy dla każdej informacji
-        const likesInfo = document.createElement('p');
-        likesInfo.classList.add('info-item');
-        likesInfo.innerHTML = `<b>Likes:</b> ${image.likes}`;
-        
-        const viewsInfo = document.createElement('p');
-        viewsInfo.classList.add('info-item');
-        viewsInfo.innerHTML = `<b>Views:</b> ${image.views}`;
-        
-        const commentsInfo = document.createElement('p');
-        commentsInfo.classList.add('info-item');
-        commentsInfo.innerHTML = `<b>Comments:</b> ${image.comments}`;
-        
-        const downloadsInfo = document.createElement('p');
-        downloadsInfo.classList.add('info-item');
-        downloadsInfo.innerHTML = `<b>Downloads:</b> ${image.downloads}`;
-        
-        // Dodajemy informacje do kontenera
-        infoContainer.appendChild(likesInfo);
-        infoContainer.appendChild(viewsInfo);
-        infoContainer.appendChild(commentsInfo);
-        infoContainer.appendChild(downloadsInfo);
-
-        // Dodajemy kontener z informacjami pod obrazkiem
-        imgContainer.appendChild(infoContainer);
-        
-        gallery.appendChild(imgContainer); // Dodajemy kontener do galerii
-    });
-
-  // Inicjalizujemy SimpleLightbox
-  const lightbox = new SimpleLightbox('.gallery a');
-  lightbox.refresh(); // Odświeżamy SimpleLightbox po dodaniu nowych obrazków
-  
-  // Wywołanie płynnego przewijania strony
-  const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
-  window.scrollBy({
-    top: cardHeight * 2,
-    behavior: "smooth",
-  });
-}
-
-// Obsługa przycisku "Load more"
 const loadMoreButton = document.querySelector('.load-more');
 loadMoreButton.addEventListener('click', async () => {
   const searchInput = document.querySelector('[name="searchQuery"]');
-  const query = searchInput.value.trim(); // Pobieramy aktualne zapytanie
+  const query = searchInput.value.trim();
   try {
-    await loadMoreImages(query); // Ładujemy więcej obrazków
+    await loadMoreImages(query);
   } catch (error) {
-    Notiflix.Notify.failure('Error while loading more images. Please try again.'); // Wyświetlamy powiadomienie o błędzie
+    Notiflix.Notify.failure('Error while loading more images. Please try again.');
   }
 });
+
+function renderImages(images) {
+  const gallery = document.querySelector('.gallery');
+  images.forEach(image => {
+    const imgContainer = document.createElement('div');
+    imgContainer.classList.add('photo-card');
+    
+    const imgLink = document.createElement('a');
+    imgLink.href = image.largeImageURL;
+    imgLink.setAttribute('data-lightbox', 'gallery');
+
+    const img = document.createElement('img');
+    img.src = image.webformatURL;
+    img.alt = image.tags;
+    img.loading = 'lazy';
+    img.style.maxWidth = '100%';
+
+    imgLink.appendChild(img);
+    imgContainer.appendChild(imgLink);
+
+    const infoContainer = document.createElement('div');
+    infoContainer.classList.add('info');
+
+    const likesInfo = document.createElement('p');
+    likesInfo.classList.add('info-item');
+    likesInfo.innerHTML = `<b>Likes:</b> ${image.likes}`;
+    
+    const viewsInfo = document.createElement('p');
+    viewsInfo.classList.add('info-item');
+    viewsInfo.innerHTML = `<b>Views:</b> ${image.views}`;
+    
+    const commentsInfo = document.createElement('p');
+    commentsInfo.classList.add('info-item');
+    commentsInfo.innerHTML = `<b>Comments:</b> ${image.comments}`;
+    
+    const downloadsInfo = document.createElement('p');
+    downloadsInfo.classList.add('info-item');
+    downloadsInfo.innerHTML = `<b>Downloads:</b> ${image.downloads}`;
+    
+    infoContainer.appendChild(likesInfo);
+    infoContainer.appendChild(viewsInfo);
+    infoContainer.appendChild(commentsInfo);
+    infoContainer.appendChild(downloadsInfo);
+
+    imgContainer.appendChild(infoContainer);
+    
+    gallery.appendChild(imgContainer);
+  });
+
+  const lightbox = new SimpleLightbox('.gallery a');
+  lightbox.refresh();
+}
