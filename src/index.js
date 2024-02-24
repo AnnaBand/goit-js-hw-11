@@ -20,7 +20,8 @@ async function searchImages(query, page = 1) {
       },
     });
     return response.data;
-  } catch (error) {
+  }
+  catch (error) {
     console.error('Error while fetching images:', error);
     throw error;
   }
@@ -36,7 +37,8 @@ async function loadMoreImages(query) {
     if (data.totalHits <= currentPage * 40) {
       hideLoadMoreButton();
     }
-  } catch (error) {
+  }
+  catch (error) {
     Notiflix.Notify.failure('Error while loading more images. Please try again.');
   }
 }
@@ -68,7 +70,8 @@ searchForm.addEventListener('submit', async (event) => {
       if (data.hits.length === 0) {
         Notiflix.Notify.info('No images found. Please try a different search term.');
         return;
-      } else {
+      }
+      else {
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
       }
       currentPage = 1;
@@ -77,7 +80,8 @@ searchForm.addEventListener('submit', async (event) => {
       if (data.totalHits <= currentPage * 40) {
         hideLoadMoreButton();
       }
-    } catch (error) {
+    }
+    catch (error) {
       Notiflix.Notify.failure('Error while searching for images. Please try again.');
     }
   }
@@ -85,8 +89,9 @@ searchForm.addEventListener('submit', async (event) => {
 
 const searchInput = document.querySelector('[name="searchQuery"]');
 searchInput.addEventListener('input', () => {
-  currentPage = 1;
-  clearGallery();
+    currentPage = 1;
+    clearGallery();
+    hideLoadMoreButton();
 });
 
 const loadMoreButton = document.querySelector('.load-more');
@@ -95,7 +100,8 @@ loadMoreButton.addEventListener('click', async () => {
   const query = searchInput.value.trim();
   try {
     await loadMoreImages(query);
-  } catch (error) {
+  }
+  catch (error) {
     Notiflix.Notify.failure('Error while loading more images. Please try again.');
   }
 });
