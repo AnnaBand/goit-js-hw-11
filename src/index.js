@@ -1,6 +1,9 @@
 import axios from 'axios';
 import Notiflix from 'notiflix';
 
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
+
 const API_KEY = '42481427-12d08fa9cedf5ba58e5021062';
 
 async function searchImages(query, page = 1) {
@@ -72,14 +75,32 @@ searchForm.addEventListener('submit', async (event) => {
 
 // Renderowanie obrazków
 function renderImages(images) {
-  const gallery = document.querySelector('.gallery');
-  gallery.innerHTML = ''; // Czyścimy zawartość galerii przed wyrenderowaniem nowych obrazków
-  images.forEach(image => {
+    const gallery = document.querySelector('.gallery');
+    
+    images.forEach(image => {
+    const imgLink = document.createElement('a');
+    imgLink.href = image.largeImageURL;
+    imgLink.setAttribute('data-lightbox', 'gallery');
+
     const img = document.createElement('img');
-    img.src = image.webformatURL; // Ustawiamy źródło obrazka
-    img.alt = image.tags; // Ustawiamy atrybut alt
-    img.loading = 'lazy'; // Ustawiamy lazy loading
-    gallery.appendChild(img); // Dodajemy obrazek do galerii
+    img.src = image.webformatURL;
+    img.alt = image.tags;
+    img.loading = 'lazy';
+
+    imgLink.appendChild(img);
+    gallery.appendChild(imgLink);
+  });
+
+
+  // Inicjalizujemy SimpleLightbox
+  const lightbox = new SimpleLightbox('.gallery a');
+  lightbox.refresh(); // Odświeżamy SimpleLightbox po dodaniu nowych obrazków
+  
+  // Wywołanie płynnego przewijania strony
+  const { height: cardHeight } = document.querySelector(".gallery").firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: "smooth",
   });
 }
 
