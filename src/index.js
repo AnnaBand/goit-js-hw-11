@@ -77,20 +77,55 @@ searchForm.addEventListener('submit', async (event) => {
 function renderImages(images) {
     const gallery = document.querySelector('.gallery');
     
-    images.forEach(image => {
-    const imgLink = document.createElement('a');
-    imgLink.href = image.largeImageURL;
-    imgLink.setAttribute('data-lightbox', 'gallery');
+images.forEach(image => {
+        const imgContainer = document.createElement('div'); // Tworzymy kontener dla obrazka i informacji
+        imgContainer.classList.add('photo-card'); // Dodajemy klasę dla kontenera
+        
+        const imgLink = document.createElement('a');
+        imgLink.href = image.largeImageURL;
+        imgLink.setAttribute('data-lightbox', 'gallery');
 
-    const img = document.createElement('img');
-    img.src = image.webformatURL;
-    img.alt = image.tags;
+        const img = document.createElement('img');
+        img.src = image.webformatURL;
+        img.alt = image.tags;
     img.loading = 'lazy';
+    img.style.maxWidth = '100%';
 
-    imgLink.appendChild(img);
-    gallery.appendChild(imgLink);
-  });
+        imgLink.appendChild(img);
+        imgContainer.appendChild(imgLink); // Dodajemy obrazek do kontenera
 
+        // Tworzymy kontener dla informacji o obrazku
+        const infoContainer = document.createElement('div');
+        infoContainer.classList.add('info');
+
+        // Tworzymy elementy dla każdej informacji
+        const likesInfo = document.createElement('p');
+        likesInfo.classList.add('info-item');
+        likesInfo.innerHTML = `<b>Likes:</b> ${image.likes}`;
+        
+        const viewsInfo = document.createElement('p');
+        viewsInfo.classList.add('info-item');
+        viewsInfo.innerHTML = `<b>Views:</b> ${image.views}`;
+        
+        const commentsInfo = document.createElement('p');
+        commentsInfo.classList.add('info-item');
+        commentsInfo.innerHTML = `<b>Comments:</b> ${image.comments}`;
+        
+        const downloadsInfo = document.createElement('p');
+        downloadsInfo.classList.add('info-item');
+        downloadsInfo.innerHTML = `<b>Downloads:</b> ${image.downloads}`;
+        
+        // Dodajemy informacje do kontenera
+        infoContainer.appendChild(likesInfo);
+        infoContainer.appendChild(viewsInfo);
+        infoContainer.appendChild(commentsInfo);
+        infoContainer.appendChild(downloadsInfo);
+
+        // Dodajemy kontener z informacjami pod obrazkiem
+        imgContainer.appendChild(infoContainer);
+        
+        gallery.appendChild(imgContainer); // Dodajemy kontener do galerii
+    });
 
   // Inicjalizujemy SimpleLightbox
   const lightbox = new SimpleLightbox('.gallery a');
