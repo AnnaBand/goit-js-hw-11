@@ -2,23 +2,31 @@
     display: none;
 }
 
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
 .photo-card {
     border: 1px solid #ccc;
     margin-bottom: 20px;
     padding: 10px;
-    display: inline-block;
-    width: calc(25% - 20px);
-    box-sizing: border-box;
 }
 
 .info {
     display: flex;
-    flex-wrap: wrap;
 }
 
 .info-item {
-    flex: 0 0 50%;
-    box-sizing: border-box;
-    padding: 0 10px;
+    margin: 0 auto;
+    padding-top: 10px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+}
+
+.info-item b {
+    margin-bottom: 5px;
 }
